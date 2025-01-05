@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #f2faf9;
+  --foreground: #081513;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.tooltip-before {
+  position: relative;
+}
+
+.tooltip-before::before {
+  content: "Coming Soon";
+  position: absolute;
+  top: 2em;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0px 10px;
+  background-color: theme("colors.accent");
+  color: theme("colors.bg");
+  border-radius: 6px;
+  font-size: 1.1rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.tooltip-before:hover::before {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(30%);
+}
