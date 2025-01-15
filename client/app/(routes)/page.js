@@ -3,10 +3,21 @@ import Image from "next/image";
 
 import iconPushPrimary from "@/app/_assets/icon/push-primary.svg";
 import { useState } from "react";
-
+import { actions } from "../_actions/request";
 export default function Home() {
   const [url, setUrl] = useState("");
 
+  const fetchUsers = async () => {
+    try {
+      const res = await actions.url.GET.all();
+
+      console.log("data: ", res);
+    } catch (err) {
+      console.error("TEST failed", err);
+    } finally {
+      //  setLoading(false);
+    }
+  };
   return (
     <main className="flex h-full flex-col items-center justify-center">
       <div className="text-center flex flex-col gap-4">
@@ -29,6 +40,7 @@ export default function Home() {
 
         <button
           type="button"
+          onClick={fetchUsers}
           className="w-[400px] flex justify-between items-center py-3 px-4 border-[3px] border-[#1D5D53] bg-white rounded-[35px] shadow-sm text-xl font-bold text-[#319B8B] transition-all duration-[250ms] hover:w-[180px] hover:text-bg hover:bg-primary group hover:tracking-[-0.13em]"
         >
           <Image
