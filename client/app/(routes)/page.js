@@ -6,6 +6,8 @@ import { useState } from "react";
 import { actions } from "../_actions/request";
 import { GET } from "../_utils/api/get";
 import { POST } from "../_utils/api/post";
+import * as Sentry from "@sentry/nextjs";
+
 export default function Home() {
   const [url, setUrl] = useState("");
   const apiUrl = "http://localhost:8080/";
@@ -20,7 +22,16 @@ export default function Home() {
       //  setLoading(false);
     }
   };
-
+  const testSentry = () => {
+    try {
+      console.log("I make error");
+      throw new Error("TRY MAKE ERROR");
+    } catch (err) {
+      console.log("ERROR catch : ", err);
+      Sentry.captureException(err, "Maybe this is hint");
+      // throw new Error("Unable to shorten URL. Please try again later.");
+    }
+  };
   // const testServerConnect = async (e) => {
   //   e.preventDefault();
   //   try {
@@ -61,7 +72,7 @@ export default function Home() {
           placeholder="Enter your long url and wait for the magic!"
           onChange={(e) => setUrl(e.target.value)}
         />
-
+        <button onClick={testSentry}>SENTRY ERROR</button>
         <button
           type="button"
           // onClick={testServerConnect}

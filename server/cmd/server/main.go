@@ -2,12 +2,16 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 
+	"github.com/dev4dreams/dev4url/internal/config"
+	"github.com/dev4dreams/dev4url/internal/db"
 	"github.com/dev4dreams/dev4url/internal/handlers"
 	"github.com/dev4dreams/dev4url/internal/middleware"
 	services "github.com/dev4dreams/dev4url/internal/services/blacklist"
 	"github.com/dev4dreams/dev4url/internal/utils"
+	sentry "github.com/getsentry/sentry-go"
 	"github.com/gin-gonic/gin"
 )
 
@@ -57,38 +61,42 @@ func createUrl(c *gin.Context) {
 }
 
 func main() {
+	 cfg, err := config.Load()
 	// limiter := middleware.NewIPRateLimiter(rate.Limit(2), 5)
 	blacklistService := services.NewBlacklistService()
 	validator := utils.NewURLValidator(blacklistService)
 
 	urlHandler := handlers.NewURLHandler(validator)
 
+	err = sentry.Init(sentry.ClientOptions{
+        Dsn: cfg.SentryDSN,
+        Environment: cfg.Environment,
+        EnableTracing: true,
+        TracesSampleRate: cfg.SentryTraceRate,
+    })
+	if err != nil{
+		log.Fatalf("Sentry initialization failed: %v", err)
+	}
 	mux := http.NewServeMux()
 	mux.Handle("/api/shorten", middleware.CORS(http.HandlerFunc(urlHandler.ShortenHandler)))
 	mux.Handle("/api/health", middleware.CORS(http.HandlerFunc(urlHandler.HealthCheck)))
 	fmt.Println("Server Preparing")
 
-	err := http.ListenAndServe(":8080", mux)
 	if err != nil {
 		fmt.Printf("Server failed to start: %v\n", err)
 	}
 
-	// before
-	// cfg, err := config.Load()
-	// if err != nil {
-	// 	log.Fatalf("Failed to load config: %v", err)
-	// }
-
 	// Initialize database
-	// database, err := db.New(&cfg.Database)
-	// if err != nil {
-	// 	log.Fatalf("Failed to initialize database: %v", err)
-	// }
-	// defer database.Close()
+	database, err := db.New(&cfg.Database)
+	if err != nil {
+		log.Fatalf("Failed to initialize database: %v", err)
+	}
+	defer database.Close()
 
-	// if err := database.VerifyConnection(); err != nil {
-	// 	log.Fatalf("Connection verification failed: %v", err)
-	// }
+	if err := database.VerifyConnection(); err != nil {
+		log.Fatalf("Connection verification failed: %v", err)
+	}
+	// err := http.ListenAndServe(":8080", mux)
 
 	// // Insert the URL
 	// response, err := database.CreateURL(testURL)
