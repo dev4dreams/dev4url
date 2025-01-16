@@ -1,13 +1,13 @@
 package main
 
 import (
-	"encoding/json"
-	"log"
+	"fmt"
 	"net/http"
 
-	"github.com/dev4dreams/dev4url/internal/config"
-	"github.com/dev4dreams/dev4url/internal/db"
-	"github.com/gin-contrib/cors"
+	"github.com/dev4dreams/dev4url/internal/handlers"
+	"github.com/dev4dreams/dev4url/internal/middleware"
+	services "github.com/dev4dreams/dev4url/internal/services/blacklist"
+	"github.com/dev4dreams/dev4url/internal/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -57,52 +57,61 @@ func createUrl(c *gin.Context) {
 }
 
 func main() {
+	// limiter := middleware.NewIPRateLimiter(rate.Limit(2), 5)
+	blacklistService := services.NewBlacklistService()
+	validator := utils.NewURLValidator(blacklistService)
 
-	cfg, err := config.Load()
+	urlHandler := handlers.NewURLHandler(validator)
+
+	mux := http.NewServeMux()
+	mux.Handle("/api/shorten", middleware.CORS(http.HandlerFunc(urlHandler.ShortenHandler)))
+	mux.Handle("/api/health", middleware.CORS(http.HandlerFunc(urlHandler.HealthCheck)))
+	fmt.Println("Server Preparing")
+
+	err := http.ListenAndServe(":8080", mux)
 	if err != nil {
-		log.Fatalf("Failed to load config: %v", err)
+		fmt.Printf("Server failed to start: %v\n", err)
 	}
 
-	// Initialize database
-	database, err := db.New(&cfg.Database)
-	if err != nil {
-		log.Fatalf("Failed to initialize database: %v", err)
-	}
-	defer database.Close()
-
-	if err := database.VerifyConnection(); err != nil {
-		log.Fatalf("Connection verification failed: %v", err)
-	}
-
-	// customURL := "my-custom-url"
-	// testURL := &db.URL{
-	// 	ShortURL:    "abc123",
-	// 	OriginalURL: "https://example.com",
-	// 	CustomURL:   &customURL,
+	// before
+	// cfg, err := config.Load()
+	// if err != nil {
+	// 	log.Fatalf("Failed to load config: %v", err)
 	// }
 
-	// Insert the URL
-	response, err := database.CreateURL(testURL)
-	if err != nil {
-		log.Fatalf("Failed to create URL: %v", err)
-	}
+	// Initialize database
+	// database, err := db.New(&cfg.Database)
+	// if err != nil {
+	// 	log.Fatalf("Failed to initialize database: %v", err)
+	// }
+	// defer database.Close()
 
-	// Pretty print the response
-	prettyResponse, _ := json.MarshalIndent(response, "", "  ")
-	log.Printf("Successfully created URL:\n%s", string(prettyResponse))
+	// if err := database.VerifyConnection(); err != nil {
+	// 	log.Fatalf("Connection verification failed: %v", err)
+	// }
 
-	router := gin.Default()
+	// // Insert the URL
+	// response, err := database.CreateURL(testURL)
+	// if err != nil {
+	// 	log.Fatalf("Failed to create URL: %v", err)
+	// }
 
-	// CORS middleware
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://localhost:3000"}
-	config.AllowMethods = []string{"GET", "POST", "OPTIONS"}
-	config.AllowHeaders = []string{"Origin", "Content-Type", "Accept"}
+	// // Pretty print the response
+	// prettyResponse, _ := json.MarshalIndent(response, "", "  ")
+	// log.Printf("Successfully created URL:\n%s", string(prettyResponse))
 
-	router.Use(cors.New(config))
+	// router := gin.Default()
 
-	router.GET("/urlsAll", getUrlAll)
-	router.POST("/createUrl", createUrl)
+	// // CORS middleware
+	// config := cors.DefaultConfig()
+	// config.AllowOrigins = []string{"http://localhost:3000"}
+	// config.AllowMethods = []string{"GET", "POST", "OPTIONS"}
+	// config.AllowHeaders = []string{"Origin", "Content-Type", "Accept"}
 
-	router.Run("localhost:8080")
+	// router.Use(cors.New(config))
+
+	// router.GET("/urlsAll", getUrlAll)
+	// router.POST("/createUrl", createUrl)
+
+	// router.Run("localhost:8080")
 }
