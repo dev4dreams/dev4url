@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/dev4dreams/dev4url/internal/config"
+	"github.com/dev4dreams/dev4url/internal/models"
 	_ "github.com/lib/pq"
 )
 
@@ -73,39 +74,39 @@ func (db *Database) VerifyConnection() error {
 	return nil
 }
 
-// func (db *Database) CreateURL(url *URL) (*URLResponse, error) {
-// 	var response URLResponse
+func (db *Database) CreateURL(url *models.CreateUrlPayload) (*URLResponse, error) {
+	var response URLResponse
 
-// 	query := `
-//         INSERT INTO urls (
-//             short_url,
-//             original_url,
-//             custom_url
-//         ) VALUES (
-//             $1, $2, $3
-//         )
-//         RETURNING id, created_at, short_url, original_url,
-//                   custom_url, clicks, active, updated_at`
+	query := `
+        INSERT INTO urls (
+            short_url,
+            original_url,
+            custom_url
+        ) VALUES (
+            $1, $2, $3
+        )
+        RETURNING id, created_at, short_url, original_url,
+                  custom_url, clicks, active, updated_at`
 
-// 	err := db.QueryRow(
-// 		query,
-// 		url.ShortURL,
-// 		url.OriginalURL,
-// 		url.CustomURL,
-// 	).Scan(
-// 		&response.ID,
-// 		&response.CreatedAt,
-// 		&response.ShortURL,
-// 		&response.OriginalURL,
-// 		&response.CustomURL,
-// 		&response.Clicks,
-// 		&response.Active,
-// 		&response.UpdatedAt,
-// 	)
+	err := db.QueryRow(
+		query,
+		url.ShortenUrl,
+		url.OriginalUrl,
+		url.CustomUrl,
+	).Scan(
+		&response.ID,
+		&response.CreatedAt,
+		&response.ShortURL,
+		&response.OriginalURL,
+		&response.CustomURL,
+		&response.Clicks,
+		&response.Active,
+		&response.UpdatedAt,
+	)
 
-// 	if err != nil {
-// 		return nil, fmt.Errorf("failed to create URL: %w", err)
-// 	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to create URL: %w", err)
+	}
 
-// 	return &response, nil
-// }
+	return &response, nil
+}

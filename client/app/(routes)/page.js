@@ -53,6 +53,72 @@ export default function Home() {
       console.error("TestPost Error: ", err);
     }
   };
+  const apiSafe = async (e) => {
+    e.preventDefault();
+    try {
+      const res = await POST({
+        url: "https://safebrowsing.googleapis.com/v4/threatMatches:find?key=AIzaSyCQxHTnFTpC9R_cOiXuj89WnwDHWQd_Kwo",
+        body: {
+          client: {
+            clientId: "dev4url",
+            clientVersion: "1.5.2",
+          },
+          threatInfo: {
+            threatTypes: ["MALWARE", "SOCIAL_ENGINEERING"],
+            platformTypes: ["ANY_PLATFORM"],
+            threatEntryTypes: ["URL"],
+            threatEntries: [
+              {
+                url: "http://www.urltocheck1.org/",
+              },
+              {
+                url: "http://www.urltocheck2.org/",
+              },
+              {
+                url: "http://www.urltocheck3.com/",
+              },
+              { url: "http://testsafebrowsing.appspot.com/s/malware.html" },
+              {
+                url: "http://testsafebrowsing.appspot.com/s/social_engineering.html",
+              },
+              { url: "ftp://example.com" },
+              {
+                url: "http://social-engineering.testing.google.test/testing/social/*",
+              },
+              { url: "http://malware.testing.google.test/testing/malware/*" },
+            ],
+          },
+        },
+      });
+      console.log("RES SAFE GCP: ", res);
+    } catch (err) {
+      console.log("GCP fail: ", err);
+    }
+  };
+  const handleCreateShortUrl = async () => {
+    try {
+      const res = await POST({
+        url: apiUrl + "shorten",
+        body: { original_url: url },
+      });
+      console.log("handleCreateShortUrl RES: ", res);
+    } catch (err) {
+      console.error("handleCreateShortUrl Error: ", err);
+    }
+  };
+  const testRedirect = async () => {
+    try {
+      const res = await POST({
+        url: apiUrl + "redirect",
+        body: { ShortenUrl: "abc123" },
+      });
+
+      console.log("testRedirect res: ", res);
+    } catch (err) {
+      console.log("TESt redirect: ", err);
+    }
+  };
+  console.log("INPUT url: ", url);
   return (
     <main className="flex h-full flex-col items-center justify-center">
       <div className="text-center flex flex-col gap-4">
@@ -73,10 +139,12 @@ export default function Home() {
           onChange={(e) => setUrl(e.target.value)}
         />
         <button onClick={testSentry}>SENTRY ERROR</button>
+        <button onClick={apiSafe}>GCP TEST SAFE</button>
+        <button onClick={testRedirect}>testRedirect</button>
         <button
           type="button"
           // onClick={testServerConnect}
-          onClick={testPost}
+          onClick={handleCreateShortUrl}
           className="w-[400px] flex justify-between items-center py-3 px-4 border-[3px] border-[#1D5D53] bg-white rounded-[35px] shadow-sm text-xl font-bold text-[#319B8B] transition-all duration-[250ms] hover:w-[180px] hover:text-bg hover:bg-primary group hover:tracking-[-0.13em]"
         >
           <Image

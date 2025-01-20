@@ -5,8 +5,14 @@ import "time"
 
 // for creating a new shorten url
 type CreateUrlRequest struct {
-	OriginalURL string  `json:"original_url"`
-	CustomURL   *string `json:"custom_url,omitempty"` // still optional
+	OriginalURL string `json:"original_url"`
+	CustomURL   string `json:"custom_url,omitempty"` // still optional
+}
+
+type CreateUrlPayload struct {
+	OriginalUrl string `json:"original_url"`
+	ShortenUrl  string `json:"short_url"`
+	CustomUrl   string `json:"custom_url"`
 }
 
 // for single url response

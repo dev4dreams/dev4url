@@ -1,129 +1,155 @@
-// internal/utils/validator_test.go
-package utils_test
+package utils
 
 import (
-	"strings"
+	"context"
 	"testing"
-
-	"github.com/dev4dreams/dev4url/internal/utils"
 )
 
-func TestValidateURL(t *testing.T) {
-	validator := utils.NewURLValidator(nil)
-
+func TestURLValidator(t *testing.T) {
+	// Test cases
 	tests := []struct {
-		name    string
-		url     string
-		wantErr bool
-		errMsg  string
+		name     string
+		config   *Config
+		url      string
+		expected bool
+		errors   []string
 	}{
 		{
-			name:    "Valid HTTPS URL",
-			url:     "https://www.google.com",
-			wantErr: false,
+			name:     "Valid HTTPS URL",
+			config:   DefaultConfig(),
+			url:      "https://google.com/path?param=value",
+			expected: true,
+			errors:   nil,
 		},
 		{
-			name:    "Valid HTTP URL with path",
-			url:     "http://example.com/path",
-			wantErr: false,
+			name:     "Empty URL",
+			config:   DefaultConfig(),
+			url:      "",
+			expected: false,
+			errors:   []string{"URL cannot be empty"},
 		},
 		{
-			name:    "Empty URL",
-			url:     "",
-			wantErr: true,
-			errMsg:  "URL cannot be empty",
+			name: "URL Exceeding Max Length",
+			config: &Config{
+				MaxURLLength:    20,
+				BlockedPatterns: []string{},
+				BlockedDomains:  []string{},
+			},
+			url:      "https://verylongdomainname.com/path",
+			expected: false,
+			errors:   []string{"URL exceeds maximum length of 20 characters"},
 		},
 		{
-			name:    "Invalid scheme (FTP)",
-			url:     "ftp://example.com",
-			wantErr: true,
-			errMsg:  "URL scheme must be http or https",
+			name:     "Invalid Scheme",
+			config:   DefaultConfig(),
+			url:      "ftp://example.com",
+			expected: false,
+			errors: []string{
+				"URL scheme must be http or https",
+				"URL contains suspicious pattern: ftp:",
+				"domain is blocked",
+			},
 		},
 		{
-			name:    "Local IP address",
-			url:     "http://192.168.1.1",
-			wantErr: true,
-			errMsg:  "private/local addresses are not allowed",
+			name:     "Blocked Domain",
+			config:   DefaultConfig(),
+			url:      "https://example.com",
+			expected: false,
+			errors:   []string{"domain is blocked"},
 		},
 		{
-			name:    "JavaScript injection attempt",
-			url:     "javascript:alert(1)",
-			wantErr: true,
-			errMsg:  "URL scheme must be http or https",
+			name:     "Suspicious Pattern",
+			config:   DefaultConfig(),
+			url:      "https://domain.com/path?script=<script>alert('xss')</script>",
+			expected: false,
+			errors:   []string{"URL contains suspicious pattern: <script"},
 		},
 		{
-			name:    "SQL Injection attempt",
-			url:     "http://example.com/page?id=1--DROP",
-			wantErr: true,
-			errMsg:  "potentially malicious pattern", // Updated to match actual error
+			name: "Allowed Domains Test",
+			config: &Config{
+				MaxURLLength:    2048,
+				AllowedDomains:  []string{"trusted.com"},
+				BlockedPatterns: DefaultConfig().BlockedPatterns,
+				BlockedDomains:  DefaultConfig().BlockedDomains,
+			},
+			url:      "https://untrusted.com",
+			expected: false,
+			errors:   []string{"domain not in allowed list"},
 		},
 		{
-			name:    "Phishing attempt",
-			url:     "http://google.com.malicious.com", // Updated to match suspicious domain pattern
-			wantErr: true,
-			errMsg:  "suspicious domain pattern",
-		}, {
-			name:    "Phishing attempt",
-			url:     "http://google-account.malicious.com", // More obvious phishing attempt
-			wantErr: true,
-			errMsg:  "suspicious domain pattern",
+			name:     "Local IP Not Allowed",
+			config:   DefaultConfig(),
+			url:      "http://127.0.0.1/admin",
+			expected: false,
+			errors:   []string{"IP-based URLs with private/local addresses are not allowed"},
 		},
 		{
-			name:    "Another phishing attempt",
-			url:     "http://accounts-google.com",
-			wantErr: true,
-			errMsg:  "suspicious domain pattern",
+			name:     "Private IP Not Allowed",
+			config:   DefaultConfig(),
+			url:      "http://192.168.1.1/admin",
+			expected: false,
+			errors:   []string{"IP-based URLs with private/local addresses are not allowed"},
 		},
 	}
 
+	// Run test cases
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := validator.ValidateURL(tt.url)
+			validator := NewURLValidator(tt.config)
+			result := validator.ValidateURL(context.Background(), tt.url)
 
-			// Check if error was expected
-			if (err != nil) != tt.wantErr {
-				t.Errorf("ValidateURL() error = %v, wantErr %v", err, tt.wantErr)
-				return
+			if result.IsValid != tt.expected {
+				t.Errorf("ValidateURL() got = %v, want %v", result.IsValid, tt.expected)
 			}
 
-			// If we expect an error, check the message
-			if tt.wantErr && err != nil && tt.errMsg != "" {
-				if !strings.Contains(strings.ToLower(err.Error()), strings.ToLower(tt.errMsg)) {
-					t.Errorf("ValidateURL() error message = %v, want to contain %v", err, tt.errMsg)
+			if tt.errors != nil {
+				if len(result.Errors) != len(tt.errors) {
+					t.Errorf("ValidateURL() got %d errors, want %d errors. Got errors: %v, want errors: %v",
+						len(result.Errors), len(tt.errors), result.Errors, tt.errors)
+				}
+
+				for i, expectedErr := range tt.errors {
+					if i < len(result.Errors) && result.Errors[i] != expectedErr {
+						t.Errorf("ValidateURL() error = %v, want %v", result.Errors[i], expectedErr)
+					}
 				}
 			}
 		})
 	}
 }
 
-// internal/utils/validator_test.go
-// func TestValidatorWithBlacklist(t *testing.T) {
-//     bs := services.NewBlacklistService()
-//     validator := NewURLValidator(bs)
+func TestDefaultConfig(t *testing.T) {
+	config := DefaultConfig()
 
-//     tests := []struct {
-//         name    string
-//         url     string
-//         wantErr bool
-//     }{
-//         {
-//             name:    "Clean URL",
-//             url:     "https://example.com",
-//             wantErr: false,
-//         },
-//         {
-//             name:    "Blacklisted pattern",
-//             url:     "https://paypal.com.phishing.com",
-//             wantErr: true,
-//         },
-//     }
+	if config.MaxURLLength != 2048 {
+		t.Errorf("DefaultConfig() MaxURLLength = %d, want %d", config.MaxURLLength, 2048)
+	}
 
-//     for _, tt := range tests {
-//         t.Run(tt.name, func(t *testing.T) {
-//             err := validator.ValidateURL(tt.url)
-//             if (err != nil) != tt.wantErr {
-//                 t.Errorf("ValidateURL() with blacklist error = %v, wantErr %v", err, tt.wantErr)
-//             }
-//         })
-//     }
-// }
+	if len(config.BlockedPatterns) == 0 {
+		t.Error("DefaultConfig() BlockedPatterns is empty")
+	}
+
+	if len(config.BlockedDomains) == 0 {
+		t.Error("DefaultConfig() BlockedDomains is empty")
+	}
+}
+
+func TestNewURLValidator(t *testing.T) {
+	t.Run("With Custom Config", func(t *testing.T) {
+		config := &Config{
+			MaxURLLength:   1000,
+			BlockedDomains: []string{"blocked.com"},
+		}
+		validator := NewURLValidator(config)
+		if validator.config != config {
+			t.Error("NewURLValidator() did not set custom config correctly")
+		}
+	})
+
+	t.Run("With Nil Config", func(t *testing.T) {
+		validator := NewURLValidator(nil)
+		if validator.config == nil {
+			t.Error("NewURLValidator() did not set default config when nil was provided")
+		}
+	})
+}

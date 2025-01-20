@@ -15,8 +15,9 @@ export const POST = async ({
       const errorMsg = await response.text();
       return errorMsg;
     }
-    console.log("TEST: ", response);
-    return await response.json();
+    const data = await response.json();
+    console.log("POST DATA: ", data);
+    return data;
   } catch (err) {
     console.log("requestPOST Error: ", err);
   }
