@@ -27,6 +27,12 @@ func main() {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
+	if err = middleware.InitSentry(os.Getenv("SENTRY_DSN")); err != nil {
+		log.Fatalf("Failed to initialize Sentry: %v", err)
+	}
+
+	defer middleware.FlushSentry(2 * time.Second)
+
 	// Initialize URL shortener
 	generator, err := core.NewGenerator(1)
 	if err != nil {
@@ -77,7 +83,7 @@ func main() {
 	))
 
 	mux.HandleFunc("/shorten", createUrlHandler.CreateShortURL)
-	handler := middleware.CORS(limiter.RateLimit(mux))
+	handler := middleware.CORS(middleware.SentryHandler(limiter.RateLimit(mux)))
 
 	// Create server with timeouts
 	server := &http.Server{

@@ -31,8 +31,9 @@ export default function Shorten() {
     }
   };
   return (
-    <div>
+    <div className="w-full h-full pt-4 flex justify-center items-center">
       <p>Pathname: {pathname}</p>
+      <div className=""></div>
     </div>
   );
 }

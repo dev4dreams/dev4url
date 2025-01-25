@@ -41,7 +41,7 @@ export default function RootLayout({ children }) {
         className={`${geistSans.variable} ${geistMono.variable} ${ebGaramond.variable} ${zenDots.variable} antialiased h-dvh bg-bg flex-col items-start pt-[7.5%]`}
       >
         <Header />
-        <div className="px-[10%] h-[90%] flex-col justify-center items-center ">
+        <div className="px-[10%] w-dvw h-[97%] flex-col justify-center items-center ">
           {children}
         </div>
       </body>

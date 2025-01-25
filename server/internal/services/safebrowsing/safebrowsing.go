@@ -13,6 +13,11 @@ import (
 
 const defaultBaseURL = "https://safebrowsing.googleapis.com/v4/threatMatches:find"
 
+type SafeBrowsingChecker interface {
+	IsURLSafe(url string) (bool, error)
+	CheckURL(url string) (*ThreatResponse, error)
+}
+
 // SafeBrowsingService handles communication with the Google Safe Browsing API
 type SafeBrowsingService struct {
 	apiKey     string

@@ -13,6 +13,10 @@ type URLValidator struct {
 	config *Config
 }
 
+type URLValidatorInterface interface {
+	ValidateURL(ctx context.Context, urlStr string) *ValidationResult
+}
+
 // Config holds validation configuration
 type Config struct {
 	MaxURLLength    int      `json:"maxUrlLength"`
@@ -43,6 +47,7 @@ func DefaultConfig() *Config {
 		BlockedDomains: []string{
 			"example.com",
 			"test.com",
+			"localhost",
 		},
 	}
 }
@@ -133,7 +138,12 @@ func (v *URLValidator) validateSecurity(urlStr string) error {
 // validateDomain performs domain-specific validation
 func (v *URLValidator) validateDomain(urlStr string) error {
 	parsedURL, _ := url.Parse(urlStr)
+	hostname := parsedURL.Hostname()
 
+	// Block localhost in all forms
+	if hostname == "localhost" || strings.HasSuffix(hostname, ".localhost") {
+		return fmt.Errorf("localhost URLs are not allowed")
+	}
 	// Check for IP addresses
 	if ip := net.ParseIP(parsedURL.Hostname()); ip != nil {
 		if ip.IsLoopback() || ip.IsPrivate() || ip.IsUnspecified() {
