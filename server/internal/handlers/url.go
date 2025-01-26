@@ -18,23 +18,18 @@ import (
 )
 
 type URLHandler struct {
-	// UrlValidator utils.URLValidator
 	UrlValidator utils.URLValidatorInterface
 	SafeBrowsing safebrowsing.SafeBrowsingChecker
-	// SafeBrowsing safebrowsing.SafeBrowsingService
-	Shortener *core.Generator
-	BaseURL   string
-	// Db        db.Database
-	Db db.DatabaseInterface
+	Shortener    *core.Generator
+	BaseURL      string
+	Db           db.DatabaseInterface
 }
 
 func NewURLHandler(
 	validator utils.URLValidatorInterface,
 	safeBrowsing safebrowsing.SafeBrowsingChecker,
-	// safeBrowsing safebrowsing.SafeBrowsingService,
 	shortener *core.Generator,
 	baseURL string,
-	// db db.Database,
 	db db.DatabaseInterface,
 ) *URLHandler {
 	return &URLHandler{
@@ -166,13 +161,6 @@ func (h *URLHandler) CreateShortURL(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	// // Generate short URL
-	// shortCode, err := h.shortener.GenerateShortURL()
-	// if err != nil {
-	// 	http.Error(w, "Error generating short URL", http.StatusInternalServerError)
-	// 	return
-	// }
-
 	urlPayload := &models.CreateUrlPayload{
 		ShortenUrl:  shortCode,
 		OriginalUrl: req.OriginalURL,
@@ -192,9 +180,8 @@ func (h *URLHandler) CreateShortURL(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Construct full short URL
-	// fullShortURL := h.baseURL + "/" + shortCode
 	fullShortURL := h.BaseURL + "/" + dbResponse.ShortURL
-
+	fmt.Println("ShortURL created: %v", fullShortURL)
 	w.Header().Set("Content-Type", "application/json")
 	response := models.CreateUrlResponse{
 		ShortenUrl: fullShortURL,

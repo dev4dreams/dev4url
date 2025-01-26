@@ -76,13 +76,13 @@ func main() {
 	limiter := middleware.NewIPRateLimiter(rate.Limit(3), 5) // 100 requests per second, burst of 10
 
 	// Register routes with middleware
-	mux.Handle("/redirect", middleware.CORS(
+	mux.Handle("/shortUrl/get", middleware.CORS(
 		limiter.RateLimit(
 			http.HandlerFunc(redirectHandler.HandleRedirect),
 		),
 	))
 
-	mux.HandleFunc("/shorten", createUrlHandler.CreateShortURL)
+	mux.HandleFunc("/shortUrl/post", createUrlHandler.CreateShortURL)
 	handler := middleware.CORS(middleware.SentryHandler(limiter.RateLimit(mux)))
 
 	// Create server with timeouts

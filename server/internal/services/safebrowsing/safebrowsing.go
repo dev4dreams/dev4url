@@ -128,7 +128,6 @@ func (s *SafeBrowsingService) CheckURL(url string) (*ThreatResponse, error) {
 // IsURLSafe returns true if the URL is safe, false if it's potentially dangerous
 func (s *SafeBrowsingService) IsURLSafe(url string) (bool, error) {
 	response, err := s.CheckURL(url)
-	fmt.Println("isURLSafe response: ", response, err)
 
 	if err != nil {
 		return false, err

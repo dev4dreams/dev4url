@@ -98,7 +98,7 @@ export default function Home() {
   const handleCreateShortUrl = async () => {
     try {
       const res = await POST({
-        url: apiUrl + "shorten",
+        url: apiUrl + "shortUrl/post",
         body: { original_url: url },
       });
       console.log("handleCreateShortUrl RES: ", res);
@@ -109,7 +109,7 @@ export default function Home() {
   const testRedirect = async () => {
     try {
       const res = await POST({
-        url: apiUrl + "redirect",
+        url: apiUrl + "shortUrl/get",
         body: { ShortenUrl: "abc123" },
       });
 

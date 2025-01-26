@@ -17,7 +17,7 @@ export default function Shorten() {
   const handleRedirect = async () => {
     try {
       const res = await POST({
-        url: apiUrl + "redirect",
+        url: apiUrl + "shortUrl/get",
         body: { ShortenUrl: pathname.slice(1) },
       });
 
