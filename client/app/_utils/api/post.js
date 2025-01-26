@@ -1,10 +1,11 @@
+"use server";
+
 export const POST = async ({
   url,
   headers = { "Content-Type": "application/json" },
   body = null,
 }) => {
   try {
-    console.log("requestPOST URL: ", url);
     const response = await fetch(url, {
       method: "POST",
       headers,
@@ -16,7 +17,6 @@ export const POST = async ({
       return errorMsg;
     }
     const data = await response.json();
-    console.log("POST DATA: ", data);
     return data;
   } catch (err) {
     console.log("requestPOST Error: ", err);

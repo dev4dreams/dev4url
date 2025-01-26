@@ -39,3 +39,39 @@ body {
   visibility: visible;
   transform: translateX(-50%) translateY(30%);
 }
+
+.btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  pointer-events: none;
+  background: #f3f4f6;
+  color: #9ca3af;
+  border: 1px solid #e5e7eb;
+}
+
+@layer components {
+  /* HTML: <div class="loader"></div> */
+  .loader {
+    width: fit-content;
+    font-weight: bold;
+    font-family: monospace;
+    background: radial-gradient(circle closest-side, #0abab5 94%, #0000)
+      right/calc(200% - 1em) 100%;
+    animation: l24 1s infinite alternate linear;
+  }
+  .loader::before {
+    content: "Loading...";
+    line-height: 1em;
+    color: #0000;
+    background: inherit;
+    background-image: radial-gradient(circle closest-side, #fff 94%, #000);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  @keyframes l24 {
+    100% {
+      background-position: left;
+    }
+  }
+}
