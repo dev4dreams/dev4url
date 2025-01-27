@@ -1,12 +1,12 @@
 "use client";
+
 import Image from "next/image";
+import { useCallback, useState } from "react";
+import * as Sentry from "@sentry/nextjs";
+
+import { POST } from "../_utils/api/post";
 
 import iconPushPrimary from "@/app/_assets/icon/push-primary.svg";
-import { useCallback, useState } from "react";
-import { actions } from "../_actions/request";
-import { GET } from "../_utils/api/get";
-import { POST } from "../_utils/api/post";
-import * as Sentry from "@sentry/nextjs";
 
 import UrlResult from "../_components/home/result";
 import ErrorMsg from "../_components/home/errorMsg";

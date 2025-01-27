@@ -54,7 +54,7 @@ body {
   .loader {
     width: fit-content;
     font-weight: bold;
-    font-family: monospace;
+    /* font-family: monospace; */
     background: radial-gradient(circle closest-side, #0abab5 94%, #0000)
       right/calc(200% - 1em) 100%;
     animation: l24 1s infinite alternate linear;

@@ -23,7 +23,7 @@ export default function UrlResult({ shortenUrl }) {
         <Image
           src={IconLink}
           alt="link icon"
-          className="w-[20px] sm:w-[22px] md:w-[26px]"
+          className="w-[20px] sm:w-[22px] md:w-[26px] text-white"
         />{" "}
         <span className=" text-white text-[14px] sm:text-[18px] md:text-lg lg:text-xl font-semibold pr-4">
           {shortenUrl}
