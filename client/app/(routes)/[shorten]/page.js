@@ -25,7 +25,7 @@ export default function Shorten() {
         window.location.replace(res.original_url);
       }
 
-      router.push("nonexistent");
+      router.push("404");
     } catch (err) {
       console.log("handleRedirect Error: ", err);
     }

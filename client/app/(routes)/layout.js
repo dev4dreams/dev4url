@@ -38,10 +38,10 @@ export default function RootLayout({ children }) {
         <link rel="icon" href={iconLogo.src} />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${ebGaramond.variable} ${zenDots.variable} antialiased h-dvh bg-bg flex-col items-start pt-[7.5%]`}
+        className={`${geistSans.variable} ${geistMono.variable} ${ebGaramond.variable} ${zenDots.variable} antialiased w-dvw h-dvh bg-bg flex-col items-start pt-[7.5%]`}
       >
         <Header />
-        <div className="px-[10%] w-dvw h-[97%] flex-col justify-center items-center ">
+        <div className="px-[10%] w-full h-[97%] flex-col justify-center items-center ">
           {children}
         </div>
       </body>
