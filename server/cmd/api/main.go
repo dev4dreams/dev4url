@@ -87,8 +87,7 @@ func main() {
 
 	// Create server with timeouts
 	server := &http.Server{
-		Addr: cfg.ServerAddress,
-		// Handler:      mux,
+		Addr:         cfg.ServerAddress,
 		Handler:      handler,
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,

@@ -181,7 +181,7 @@ func (h *URLHandler) CreateShortURL(w http.ResponseWriter, r *http.Request) {
 
 	// Construct full short URL
 	fullShortURL := h.BaseURL + "/" + dbResponse.ShortURL
-	fmt.Println("ShortURL created: %v", fullShortURL)
+	fmt.Printf("ShortURL created: %v", fullShortURL)
 	w.Header().Set("Content-Type", "application/json")
 	response := models.CreateUrlResponse{
 		ShortenUrl: fullShortURL,
