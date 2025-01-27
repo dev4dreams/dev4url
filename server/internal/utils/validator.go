@@ -48,6 +48,7 @@ func DefaultConfig() *Config {
 			"example.com",
 			"test.com",
 			"localhost",
+			"dev4url.cc",
 		},
 	}
 }
@@ -154,7 +155,11 @@ func (v *URLValidator) validateDomain(urlStr string) error {
 
 	// Check blocked domains
 	for _, blockedDomain := range v.config.BlockedDomains {
-		if strings.Contains(parsedURL.Hostname(), blockedDomain) {
+		hostName := parsedURL.Hostname()
+		if strings.Contains(hostName, blockedDomain) {
+			if hostName == "dev4url.cc" {
+				return fmt.Errorf("using dev4url as domain")
+			}
 			return fmt.Errorf("domain is blocked")
 		}
 	}

@@ -30,9 +30,12 @@ export default function Home() {
         body: { original_url: url },
       });
       setUrl("");
-
+      console.log("res", res);
       if (!res.shortenUrl) {
-        setErrorMsg("url");
+        console.log(typeof res, JSON.parse(res));
+        const error = await JSON.parse(res);
+
+        setErrorMsg(error?.errors[0].includes("dev4url") ? "dev4url" : "url");
       }
 
       setIsLoading(false);
