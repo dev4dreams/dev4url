@@ -1,4 +1,5 @@
 "use server";
+import * as Sentry from "@sentry/nextjs";
 
 export const POST = async ({
   url,
@@ -11,7 +12,7 @@ export const POST = async ({
       headers,
       body: body ? JSON.stringify(body) : null,
     });
-    console.log("res: ", response);
+
     if (!response.ok) {
       const errorMsg = await response.text();
       return errorMsg;
@@ -19,6 +20,7 @@ export const POST = async ({
     const data = await response.json();
     return data;
   } catch (err) {
-    console.log("requestPOST Error: ", err);
+    console.error("requestPOST Error: ", err);
+    Sentry.captureException(err, "POST Error");
   }
 };

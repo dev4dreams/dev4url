@@ -13,10 +13,18 @@ export default function ErrorMsg({ error }) {
         alt="warning icon"
         className="w-[16px] md:w-[25px]"
       />{" "}
-      <p className="h-full text-[#cf073d] text-[8px] sm:text-[12px] md:text-[16px] font-semibold pt-1 pr-2">
-        This URL has been flagged as potentially unsafe. <br />
-        We can't process URL that may contain unsafe content.
-      </p>
+      {error == "url" ? (
+        <p className="h-full text-[#cf073d] text-[8px] sm:text-[12px] md:text-[16px] font-semibold pt-1 pr-2">
+          This URL has been flagged as potentially unsafe. <br />
+          We can't process URL that may contain unsafe content.
+        </p>
+      ) : (
+        <p className="h-full text-[#cf073d] text-[8px] sm:text-[12px] md:text-[16px] font-semibold pt-1 pr-2">
+          Sorry for the inconvenience. <br /> Server is during maintenance.
+          <br />
+          Please try again later.
+        </p>
+      )}
     </div>
   );
 }

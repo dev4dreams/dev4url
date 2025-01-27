@@ -16,7 +16,7 @@ export default function Home() {
   const [shortenUrl, setShortenUrl] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const apiUrl = "http://localhost:8080/";
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const handleCreateShortUrl = async () => {
     try {
@@ -32,16 +32,16 @@ export default function Home() {
       setUrl("");
 
       if (!res.shortenUrl) {
-        setErrorMsg(
-          "This URL has been flagged as potentially unsafe. We can't process URL that may contain unsafe content."
-        );
+        setErrorMsg("url");
       }
-      console.log("handleCreateShortUrl RES: ", res);
+
       setIsLoading(false);
       setShortenUrl(res.shortenUrl);
     } catch (err) {
       console.error("handleCreateShortUrl Error: ", err);
       Sentry.captureException(err, "handleCreateShortUrl");
+      setErrorMsg("server");
+      setIsLoading(false);
     }
   };
 
