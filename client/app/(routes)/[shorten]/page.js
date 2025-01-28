@@ -24,12 +24,12 @@ export default function Shorten() {
         url: apiUrl + "shortUrl/get",
         body: { ShortenUrl: pathname.slice(1) },
       });
-      console.log("RES: ", res);
+
       if (res.original_url) {
         window.location.replace(res.original_url);
       }
       setTimeout(() => {
-        // router.push("404");
+        router.push("404");
       }, 1000);
     } catch (err) {
       console.error("handleRedirect Error: ", err);
