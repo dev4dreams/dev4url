@@ -6,7 +6,7 @@ export default function NonExist() {
   const router = useRouter();
   return (
     <div className="w-full h-full flex flex-col items-center pt-[40%] sm:pt-[20%] lg:pt-[3.5em] md:gap-10">
-      <div className="w-[80%] sm:w-[400px] md:w-[500px] lg:w-[60%]">
+      <div className="w-[80%] sm:w-[400px] md:w-[500px] lg:w-[580px]">
         <video autoPlay={true} playsInline muted width="100%">
           <source
             src={`https://as85m4vyio.ufs.sh/f/SawKekFykXenLsPhMNayeTEc2nDqrgKXAPS3yxsvQpjMCdla`}
