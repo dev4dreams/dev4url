@@ -48,9 +48,6 @@ func main() {
 
 	// Initialize URL handler
 	baseURL := os.Getenv("BASE_URL")
-	if baseURL == "" {
-		baseURL = "http://localhost:8080" // Default for development
-	}
 
 	// Initialize database connection
 	database, err := db.New(&cfg.Database)

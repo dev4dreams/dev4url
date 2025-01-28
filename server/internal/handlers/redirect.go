@@ -46,8 +46,7 @@ func (h *RedirectHandler) HandleRedirect(w http.ResponseWriter, r *http.Request)
 		UPDATE urls 
 		SET 
 			clicks = clicks + 1,
-			last_accessed_at = NOW(),
-			expires_at = NOW() + INTERVAL '3 years'
+			last_accessed_at = NOW()
 		WHERE short_url = $1 AND active = true 
 		RETURNING original_url`,
 		req.ShortenUrl,

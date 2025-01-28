@@ -10,11 +10,6 @@ func CORS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
 
-		// if allowedOrigins == "" {
-		allowedOrigins = "http://localhost:3000"
-		// }
-
-		// w.Header().Set("Access-Control-Allow-Origin", "https://dev4url.cc")
 		w.Header().Set("Access-Control-Allow-Origin", allowedOrigins)
 
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
