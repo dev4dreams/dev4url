@@ -32,7 +32,7 @@ export default function Shorten() {
         router.push("404");
       }, 1000);
     } catch (err) {
-      console.error("handleRedirect Error: ", err);
+      // console.error("handleRedirect Error: ", err);
       Sentry.captureException(err, "handleRedirect");
       router.push("maintenance");
     }

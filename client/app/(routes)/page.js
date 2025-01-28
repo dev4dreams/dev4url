@@ -39,7 +39,7 @@ export default function Home() {
       setIsLoading(false);
       setShortenUrl(res.shortenUrl);
     } catch (err) {
-      console.error("handleCreateShortUrl Error: ", err);
+      // console.error("handleCreateShortUrl Error: ", err);
       Sentry.captureException(err, "handleCreateShortUrl");
       setErrorMsg("server");
       setIsLoading(false);
