@@ -2,6 +2,7 @@ import { Geist, Geist_Mono, EB_Garamond, Zen_Dots } from "next/font/google";
 import "./globals.css";
 import Header from "../_components/layouts/header";
 import iconLogo from "../_assets/icon/dev4url_icon.png";
+import Footer from "../_components/layouts/footer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,12 +39,13 @@ export default function RootLayout({ children }) {
         <link rel="icon" href={iconLogo.src} />
       </head>
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${ebGaramond.variable} ${zenDots.variable} antialiased h-dvh bg-bg flex-col items-start pt-[7.5%]`}
+        className={`${geistSans.variable} ${geistMono.variable} ${ebGaramond.variable} ${zenDots.variable} antialiased w-dvw h-dvh bg-bg flex-col items-start pt-[7.5%]`}
       >
         <Header />
-        <div className="px-[10%] h-[90%] flex-col justify-center items-center ">
+        <div className="px-[10%] w-full h-[95%] flex-col justify-center items-center ">
           {children}
         </div>
+        <Footer />
       </body>
     </html>
   );

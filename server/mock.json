@@ -1,0 +1,6 @@
+{
+  "ID": "abc1234",
+  "ShortenUrl": "http://short.url/abc1234Test",
+  "OriginalUrl": "https://www.example.com/very/long/original/url1TEST",
+  "CreateTime": "2025-01-13T14:30:00Z"
+}
